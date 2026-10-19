@@ -1,0 +1,14 @@
+[versions]
+agp = "8.13.2"
+shizuku = "13.1.5"
+
+[libraries]
+# Shizuku：项目用它做特权桥（pm install -r / 跑命令）。
+# 源码直接 import 了 rikka.shizuku.*（api）和 moe.shizuku.server.*（aidl），
+# provider 则是清单里 rikka.shizuku.ShizukuProvider 那个 provider。
+shizuku-api = { group = "dev.rikka.shizuku", name = "api", version.ref = "shizuku" }
+shizuku-provider = { group = "dev.rikka.shizuku", name = "provider", version.ref = "shizuku" }
+shizuku-aidl = { group = "dev.rikka.shizuku", name = "aidl", version.ref = "shizuku" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
