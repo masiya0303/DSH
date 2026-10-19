@@ -1,0 +1,61 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+  <!--
+    启动页专用 Logo（v1.93）—— 与桌面图标 ic_launcher.xml 的区别：**没有白底方块**。
+
+    为什么必须单独一支：
+      ic_launcher.xml 是"自适应图标"，第一层就是 `M0,0 h108 v108 h-108 z` 的纯白铺底。
+      启动页的 SplashLogoView 会对整张图 setTint()，而 setTint 的作用范围是**所有路径**，
+      于是白底那层也被涂成同一个颜色，把上面的鲸鱼整个盖住 —— 屏上就是一个纯色方块
+      （浅色主题 #1F2328 黑块、深色主题近似白块）。这不是"图丢了"，是被自己的底色盖死。
+      所以这里只留鲸鱼本身，透明底；同时把整组路径平移 (-8, +7.8)，
+      让鲸鱼包围盒的中心落在 108×108 的正中 —— 否则它会偏右上，在圆环里看着不居中。
+
+    调用方：MainActivity.SplashLogoView（不再 tint，保持彩色）。
+  -->
+
+  <group
+      android:translateX="-8"
+      android:translateY="7.8">
+
+    <!-- 1. 智慧思考气泡 / 能量喷泉 (极光青蓝) -->
+    <path
+        android:fillColor="#FF00C6FF"
+        android:pathData="M36,30 m-3.2,0 a3.2,3.2 0 1,0 6.4,0 a3.2,3.2 0 1,0 -6.4,0" />
+    <path
+        android:fillColor="#FF38E1FF"
+        android:pathData="M44,22 m-2.2,0 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0" />
+    <path
+        android:fillColor="#FF70EEFF"
+        android:pathData="M53,17 m-1.6,0 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0" />
+
+    <!-- 2. 鲸鱼主身躯 (经典科技蓝 #1D63FF, 流线跃浪姿态) -->
+    <path
+        android:fillColor="#FF1D63FF"
+        android:pathData="M22,52 C22,40 36,34 52,35 C68,36 80,44 88,56 C95,48 100,45 102,46 C101,53 96,59 92,63 C97,68 101,75 99,77 C94,77 88,71 84,65 C74,72 60,75 46,73 C32,71 22,62 22,52 Z" />
+
+    <!-- 3. 鲸鱼腹部层次流线 (#00D2FF 极光青) -->
+    <path
+        android:fillColor="#FF00D2FF"
+        android:pathData="M23,55 C26,65 38,72 54,71 C66,70 76,65 84,59 C76,56 62,55 48,56 C34,57 26,58 23,55 Z" />
+
+    <!-- 4. 优雅胸鳍 (立体阴影深蓝 #0A47D4) -->
+    <path
+        android:fillColor="#FF0A47D4"
+        android:pathData="M42,61 C46,68 54,74 58,76 C56,78 50,78 44,73 C39,69 39,63 42,61 Z" />
+
+    <!-- 5. 灵动之眼 (纯白与深邃瞳孔) -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M33,47 m-2.5,0 a2.5,2.5 0 1,0 5.0,0 a2.5,2.5 0 1,0 -5.0,0" />
+    <path
+        android:fillColor="#FF0A3596"
+        android:pathData="M34,46.5 m-1.0,0 a1.0,1.0 0 1,0 2.0,0 a1.0,1.0 0 1,0 -2.0,0" />
+
+  </group>
+
+</vector>

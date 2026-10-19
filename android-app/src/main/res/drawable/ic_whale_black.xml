@@ -1,0 +1,41 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+  <!-- 1. 智慧思考气泡 / 能量喷泉 -->
+  <path
+      android:fillColor="#FF00C6FF"
+      android:pathData="M36,30 m-3.2,0 a3.2,3.2 0 1,0 6.4,0 a3.2,3.2 0 1,0 -6.4,0" />
+  <path
+      android:fillColor="#FF38E1FF"
+      android:pathData="M44,22 m-2.2,0 a2.2,2.2 0 1,0 4.4,0 a2.2,2.2 0 1,0 -4.4,0" />
+  <path
+      android:fillColor="#FF70EEFF"
+      android:pathData="M53,17 m-1.6,0 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0" />
+
+  <!-- 2. 鲸鱼主身躯 (经典科技蓝 #1D63FF) -->
+  <path
+      android:fillColor="#FF1D63FF"
+      android:pathData="M22,52 C22,40 36,34 52,35 C68,36 80,44 88,56 C95,48 100,45 102,46 C101,53 96,59 92,63 C97,68 101,75 99,77 C94,77 88,71 84,65 C74,72 60,75 46,73 C32,71 22,62 22,52 Z" />
+
+  <!-- 3. 鲸鱼腹部层次流线 (#00D2FF 极光青) -->
+  <path
+      android:fillColor="#FF00D2FF"
+      android:pathData="M23,55 C26,65 38,72 54,71 C66,70 76,65 84,59 C76,56 62,55 48,56 C34,57 26,58 23,55 Z" />
+
+  <!-- 4. 优雅胸鳍 (#0A47D4) -->
+  <path
+      android:fillColor="#FF0A47D4"
+      android:pathData="M42,61 C46,68 54,74 58,76 C56,78 50,78 44,73 C39,69 39,63 42,61 Z" />
+
+  <!-- 5. 灵动之眼 -->
+  <path
+      android:fillColor="#FFFFFFFF"
+      android:pathData="M33,47 m-2.5,0 a2.5,2.5 0 1,0 5.0,0 a2.5,2.5 0 1,0 -5.0,0" />
+  <path
+      android:fillColor="#FF0A3596"
+      android:pathData="M34,46.5 m-1.0,0 a1.0,1.0 0 1,0 2.0,0 a1.0,1.0 0 1,0 -2.0,0" />
+
+</vector>

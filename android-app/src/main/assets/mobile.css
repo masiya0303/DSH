@@ -1,0 +1,434 @@
+/* ============================================================
+   deepdive 手机版 UI 优化 v0.4 —— 适配 DSH 内核 0.2.0-rc.1
+   ------------------------------------------------------------
+   本轮背景：手机端内核从 0.1.7-rc.1 升到官方 **0.2.0-rc.1**
+   （与 PC 桌面官方版同代），前端 CSS module 哈希再次全变。
+
+   ✅ 好消息：0.2.0 的哈希只是**换前缀**，组件名不变，可机械映射：
+      0.1.7 → 0.2.0
+      .wSkVaW_*   → .D_tfqW_*      会话壳（header/root/scrollBody/headerUtilities）
+      .uV2eYG_*   → .BuPN2G_*      输入栏 InputBar（trailing/modes/tools/select/input）
+      .QsffPG_*   → .KSI7ja_*      后台任务菜单
+      .VOzbGW_*   → .y7bFDa_*      设置页（panel/nav/navList/navCell/content）
+      .p-xYUq_*   → 见下（0.1.7 里它就是死选择器，本轮换真名）
+   ✅ 另一条好消息：`[class*="_名字_"]` 那套属性选择器在 0.2.0 前端里
+      **全部仍然命中**（已实测扫描 0.2.0 的 dist CSS/JS），所以本文件主体照旧有效。
+
+   ⚠ 两个 0.2.0 特有的坑（本文件已处理）：
+   1. **`D_` 前缀**：conversation 包在 0.2.0 里类名变成了 `.D_tfqW_header`
+      这种带 `D_` 前缀的形式（0.1.7 是 `.wSkVaW_header`）。写选择器时必须带上，
+      写成 `.tfqW_header` 会**完全匹配不到**（静默失效）。
+   2. **`-81DXq_*` 不能当类选择器**：消息操作条（MessageIconActions）的类名是
+      `-81DXq_actions` —— 以「- + 数字」开头，**不是合法的 CSS 标识符**，
+      `.-81DXq_actions{...}` 是无效规则，浏览器整条丢弃。
+      必须改用属性选择器 `[class*="-81DXq_actions"]`。
+
+   历史坑（0.1.7 时期，仍然适用，勿删）：
+   - 选择器必须用 `[class*="_名字_"]` 而非 Vite 哈希类名（哈希每次构建都变）。
+   - `_markdown_` 会撞上 primitives 的 FileTypeIcon（SVG 上的类名也叫 `_markdown_`），
+     竖屏块里那条 `svg[class*="_markdown_"]` 例外规则就是为它加的，
+     删掉会复现「文件行只有图标、没有名字」。
+   - `_item_`/`_label_`/`_separator_`/`_itemLabel_` 在 0.1.7 命中的是菜单/下拉菜单，
+     不是侧栏图标行 —— 相关规则已删除，不要再加回来。
+   ============================================================ */
+
+:root {
+  /* 触摸友好：点击目标最小 44px */
+  --ds-mobile-tap: 44px;
+  /* 鲸鱼蓝皮肤（与桌面版一致） */
+  --dsw-alias-brand-primary: #4D6BFE !important;
+  --dsw-alias-brand-primary-hover: #5B7CFF !important;
+  --dsw-alias-brand-primary-active: #3D5AE8 !important;
+}
+[data-ds-dark-theme] {
+  --dsw-alias-brand-primary: #4D6BFE !important;
+  --dsw-alias-brand-primary-hover: #5B7CFF !important;
+  --dsw-alias-brand-primary-active: #3D5AE8 !important;
+}
+
+/* ---------- 基础触摸优化 ---------- */
+button,
+[role="button"],
+.icon-btn,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* 16px 防止聚焦时页面缩放 */
+textarea,
+input[type="text"],
+input[type="search"] {
+  font-size: 16px !important;
+}
+
+/* 触屏滚动条更细 */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+}
+
+/* ---------- 真实类名适配（属性选择器：跨构建稳定） ---------- */
+
+/* 输入框/搜索框：加大点击与输入区 */
+[class*="_wrap_"] {
+  height: 44px;
+  min-height: 44px;
+  border-radius: 12px;
+  padding: 0 12px;
+}
+[class*="_input_"] {
+  font-size: 16px !important;
+  line-height: 28px;
+}
+
+/* 消息/回答内容：移动端全宽阅读，不挤压 */
+[class*="_answer_"],
+[class*="_markdown_"],
+[class*="_content_"] {
+  max-width: 100% !important;
+}
+
+/* 工具调用卡片：全宽 + 可读性 */
+[class*="_block_"],
+[class*="_output_"],
+[class*="_command_"] {
+  max-width: 100% !important;
+}
+
+/* 表格：窄屏可横向滚动
+   注：类名哈希随前端构建变化，用属性选择器匹配；同时覆盖前端 md-table-wide
+   的「hover 才显示滚动条」设计——触屏设备没有 hover，滚动条永远隐藏
+   导致宽表格无法横向滑动。移动端始终允许横向滚动。 */
+[class*="tableScroll"],
+.md-table-wide {
+  max-width: 100% !important;
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+  padding-bottom: 0 !important;
+}
+
+/* 空状态 / 引导卡：宽度自适应 */
+[class*="_card_"] {
+  max-width: 100% !important;
+}
+
+/* ============ 竖屏专项适配 ============ */
+@media (orientation: portrait) {
+  html,
+  body {
+    font-size: 15.5px;
+  }
+
+  /* 会话/回答内容宽度：竖屏给足空间 */
+  [class*="_answer_"],
+  [class*="_markdown_"] {
+    width: 100%;
+    max-width: 100% !important;
+  }
+
+  /* ⚠ FileTypeIcon 例外（详见文件头「历史坑」）：
+     把尺寸还给 SVG 自身的 width/height 属性（auto = 采用属性值）。
+     只命中 svg 元素，普通容器与聊天正文不受影响；特异性 (0,1,1) 高于
+     出问题规则的 (0,1,0)，不依赖书写顺序。 */
+  svg[class*="_answer_"],
+  svg[class*="_markdown_"],
+  svg[class*="_content_"],
+  svg[class*="_block_"],
+  svg[class*="_output_"],
+  svg[class*="_command_"] {
+    width: auto !important;
+    height: auto !important;
+  }
+
+  /* 工具卡片、代码块：竖屏不横向溢出 */
+  [class*="_block_"],
+  [class*="_output_"],
+  [class*="_content_"] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* 底部输入区：触摸目标更大、更易点击 */
+  [class*="_wrap_"] {
+    height: 48px;
+    border-radius: 14px;
+  }
+  [class*="_input_"] {
+    font-size: 16px !important;
+  }
+}
+
+/* ============ 设置页移动端优化 ============ */
+@media (max-width: 1100px) {
+  /* 设置说明文字：行距舒展，不再挤成竖排 */
+  p,
+  li,
+  dd,
+  dt {
+    line-height: 1.75;
+  }
+
+  /* 顶部操作按钮（如"打开配置文件"）更大更好点 */
+  [class*="_button_"] {
+    min-height: 40px;
+    padding: 8px 14px;
+  }
+}
+
+/* ============ 横屏矮屏（窄高度）优化 ============ */
+@media (max-height: 520px) and (orientation: landscape) {
+  html,
+  body {
+    font-size: 14.5px;
+  }
+}
+
+/* ============ 窄屏：AI 消息操作条分多行 ============
+   MessageIconActions（复制/赞踩/分支/时间/耗时/token）原为一行 flex
+   （height:28px、文字 nowrap），窄屏下会伸出屏幕；改为允许换行。
+   ⚠ 0.2.0：类名是 `-81DXq_actions`，以「- + 数字」开头，**不能写成类选择器**
+   （`.-81DXq_actions` 是无效 CSS，浏览器整条丢弃）→ 用属性选择器。
+   !important 是为了压过插件运行时注入的同名规则（注入顺序在后）。 */
+@media (max-width: 640px) {
+  [class*="-81DXq_actions"] {
+    flex-wrap: wrap !important;
+    height: auto !important;
+    min-height: 28px;
+    row-gap: 2px;
+  }
+  [class*="-81DXq_timeStart"],
+  [class*="-81DXq_timeEnd"] {
+    white-space: normal !important;
+  }
+}
+
+/* ============ 窄屏：会话标题栏给左上角三条杠让位 ============
+   聊天区顶部 header 默认 padding 左 20px（0.2.0 实测 `10px 28px 0 20px`），
+   会被 fixed 在左上角（8px 起、宽 36px）的三条杠按钮盖住；
+   窄屏下把标题栏左内边距加大，让标题从三条杠右侧开始。 */
+@media (max-width: 640px) {
+  .D_tfqW_header {
+    padding-left: 52px !important;
+  }
+}
+
+/* ============ 窄屏：正文与输入框扩宽 ============
+   桌面端为三列布局预留了大量内缩，窄屏白白浪费宽度。
+   这里把内缩收小，让正文与输入栏更宽；同时滚动条不预留占位
+   （0.2.0 的 scrollBody 默认 `scrollbar-gutter:stable`，
+   会白占一条宽度把输入栏压窄 → 按钮重叠）。 */
+@media (max-width: 640px) {
+  /* 正文滚动体：滚动条不占宽度 */
+  .D_tfqW_scrollBody {
+    scrollbar-gutter: auto !important;
+  }
+  /* 正文消息区：左右内缩收小（0.2.0 的内容列内缩由内层容器负责，
+     这里同时兜住 scrollBody 自身的左右内边距） */
+  .D_tfqW_scrollBody {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  /* 输入框 dock 更宽：clearance/inset 收小 */
+  .D_tfqW_root {
+    --dsh-composer-side-clearance: 4px !important;
+    --dsh-composer-dock-inset: 4px !important;
+  }
+  /* 工具调用卡片：不贴屏幕左右边缘 */
+  [class*="_block_"],
+  [class*="_output_"],
+  [class*="_content_"] {
+    margin-left: 2px !important;
+    margin-right: 2px !important;
+  }
+}
+
+/* ============ 窄屏：输入栏右侧按钮保持一行且不重叠 ============
+   InputBar 的 trailing 一行排开（审核模式按钮 + 模型名 + token 计量），
+   窄屏下直接换行会让审核按钮掉到下一行、输入框变高；
+   这里保持一行（nowrap），通过压缩模型名宽度与按钮间距避免重叠。 */
+@media (max-width: 640px) {
+  .BuPN2G_trailing,
+  .BuPN2G_modes,
+  .BuPN2G_tools {
+    flex-wrap: nowrap !important;
+  }
+  .BuPN2G_trailing,
+  .BuPN2G_modes {
+    gap: 6px !important;
+  }
+  .BuPN2G_select {
+    max-width: 26vw !important;
+    font-size: 12px !important;
+  }
+}
+
+/* ============ 窄屏：Bash 工具卡片防横向溢出 ============
+   终端卡片里的命令文本/输出行 white-space:pre 不换行，
+   窄屏下会把卡片撑出屏幕；改为可换行（pre-wrap）。 */
+@media (max-width: 640px) {
+  [class*="_command_"],
+  [class*="_line_"] {
+    white-space: pre-wrap !important;
+    word-break: break-all;
+  }
+  [class*="_block_"] {
+    max-width: 100% !important;
+    box-sizing: border-box;
+  }
+}
+
+/* ============ 插件按钮（核心渲染，靠 CSS 挪位） ============
+   窄屏下侧边栏里的插件入口不易触达；核心渲染的插件按钮
+   （header.utilities 里的 [data-cordis-badge]，单一实例）默认在右上角，
+   用 position:fixed 挪到左上角三条杠正下方。不动 DOM
+   （按钮留在 #root 内，React 事件委托才有效），只改样式。 */
+.dsh-mobile-plugin-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--dsw-alias-label-secondary, #8b98a9);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.dsh-mobile-plugin-btn:active {
+  background: var(--dsw-alias-interactive-bg-hover, rgba(255, 255, 255, 0.08));
+  color: var(--dsw-alias-label-primary, #e6edf3);
+}
+.dsh-mobile-plugin-btn svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+}
+
+@media (max-width: 1024px) {
+  .D_tfqW_headerUtilities [data-cordis-badge] {
+    position: fixed !important;
+    top: 52px !important;
+    left: 8px !important;
+    width: 32px !important;
+    height: 32px !important;
+    margin: 0 !important;
+    padding: 0 6px !important;
+    gap: 4px !important;
+    border-radius: 8px !important;
+    font-size: 12px !important;
+    z-index: 1000 !important;
+    background: transparent !important;
+  }
+  .D_tfqW_headerUtilities [data-cordis-badge] > span {
+    display: none !important;
+  }
+}
+
+/* ============ 窄屏：后台任务菜单不超出屏幕 ============
+   后台任务下拉默认 left:0，按钮在右侧时面板向右延伸超出屏幕
+   （任务名被推到屏外）；改为右对齐向左展开。 */
+@media (max-width: 640px) {
+  .KSI7ja_menu {
+    left: auto !important;
+    right: 0 !important;
+    max-width: calc(100vw - 24px) !important;
+  }
+}
+
+/* ============ 窄屏：设置页单栏适配 ============
+   设置页默认左右两栏（nav + 内容），竖屏下内容列被挤到一百多像素、
+   几乎不可用；改为上下排列：导航横排（可横向滚动）在顶部，内容区全宽在下。 */
+@media (max-width: 640px) {
+  .y7bFDa_panel {
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: calc(100vw - 16px) !important;
+    height: min(800px, calc(100vh - 32px)) !important;
+    border-radius: 16px !important;
+  }
+  .y7bFDa_nav {
+    width: 100% !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 8px !important;
+    padding: 10px 8px 0 !important;
+    overflow-x: auto !important;
+  }
+  .y7bFDa_navTitle {
+    flex: none !important;
+    white-space: nowrap !important;
+  }
+  .y7bFDa_navList {
+    flex-direction: row !important;
+    gap: 4px !important;
+  }
+  .y7bFDa_navCell {
+    flex: none !important;
+    white-space: nowrap !important;
+    height: 36px !important;
+    padding: 6px 12px !important;
+  }
+  .y7bFDa_content {
+    flex: 1 !important;
+    overflow-y: auto !important;
+    min-height: 0 !important;
+  }
+}
+
+/* 移动端隐藏 Tooltip（触摸端点按钮只让按钮获得焦点、不会 blur，
+   Tooltip 会赖着不走；而且它没有 scroll 监听，滚动后还错位。
+   触摸端本来就没有"悬停"这回事）。 */
+[role="tooltip"] {
+  display: none !important;
+}
+
+/* ============ 内核更新提示横幅（dsh-update-check 插件） ============
+   数据来自插件路由 /dsh-update-check/status（mobile.js 拉取并渲染）。
+   位置：顶部、给左上角三条杠（8px 起、宽 36px）留出 52px。 */
+.dsh-update-banner {
+  position: fixed;
+  top: 8px;
+  left: 52px;
+  right: 8px;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #1e88e5, #42a5f5);
+  color: #fff;
+  font-size: 12.5px;
+  line-height: 1.35;
+  box-shadow: 0 4px 14px rgba(30, 136, 229, 0.35);
+}
+.dsh-update-banner__text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dsh-update-banner__close {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+}

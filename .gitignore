@@ -1,0 +1,11 @@
+# IDE / Gradle 本地产物（CodeAssist 每次同步都会重写，不是源码）
+.platform/
+.gradle/
+build/
+local.properties
+
+# 本地备份、会话快照
+.backup/
+
+# 系统媒体索引
+.nomedia
