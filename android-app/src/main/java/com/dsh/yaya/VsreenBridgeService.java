@@ -65,7 +65,15 @@ public class VsreenBridgeService extends Service {
     private static final int PORT = 8999;
     /** 特权服务端端口。 */
     private static final int CORE_PORT = 8998;
-    /** 特权服务端主类。 */
+    /**
+     * 特权服务端主类。
+     *
+     * ⚠️ 这个类名必须与 assets/vscreen_shizuku.jar 里编译的包名一致：源码在
+     * src/main/java/com/dsh/yaya/vscreen/，jar 也必须用这个包名重编（javac + d8）。
+     * 如果 jar 还是旧包名 com.deepseek.harness.vscreen（当前仓库 assets/ 里的就是），
+     * app_process 按 CLASSPATH 找不到这个类会直接 SIGABRT，表现就是"虚拟屏打不开"。
+     * 构建前先确认 jar 里是 Lcom/dsh/yaya/vscreen/Main;。
+     */
     private static final String CORE_MAIN = "com.dsh.yaya.vscreen.Main";
 
     /**
