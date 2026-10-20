@@ -7245,7 +7245,6 @@ public class MainActivity extends Activity {
         {"tool-shizuku", "特权 shell（root 或 Shizuku 任一）"},
         {"llm-pi-ai", "第三方供应商适配（关掉则「添加提供方」不可用）"},
         {"session-telemetry-otel", "遥测上报 · Android 上不需要"},
-        {"session-log-download", "会话日志导出按钮（右上角）"},
         {"pwsh-sandbox", "PowerShell 沙箱 · Android 无 pwsh"},
         {"bash-sandbox", "bash 沙箱（本项目用 bash-local 替代）"},
         {"sandbox", "沙箱服务"},
